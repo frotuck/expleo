@@ -1,0 +1,649 @@
+openapi: 3.0.1
+info:
+  title: Todo API
+  description: Todo API
+  contact:
+    email: tuckerlukas@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+- url: http://localhost8080
+security:
+- todo_auth: []
+tags:
+- name: tasks
+  description: Tasks
+- name: users
+  description: Users
+paths:
+  /:
+    get:
+      tags:
+      - tasks
+      summary: Redirect to the UI
+      description: |
+        Default operation to redirect to the UI index page.
+      operationId: redirectTodos
+      responses:
+        "302":
+          description: redirect to the UI page
+      x-swagger-router-controller: Tasks
+  /todos:
+    get:
+      tags:
+      - tasks
+      summary: List the available tasks
+      description: |
+        The list of tasks can be filtered by their status.
+      operationId: listTodos
+      parameters:
+      - name: status
+        in: query
+        description: Filters the tasks by their status
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          enum:
+          - done
+          - waiting
+          - all
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Todo'
+                x-content-type: application/json
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "501":
+          description: Not Implemented
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "503":
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+      security:
+      - todo_auth:
+        - read:todo
+      x-swagger-router-controller: Tasks
+  /todos/{todoId}:
+    put:
+      tags:
+      - tasks
+      summary: Update the todo
+      description: |
+        Update the todo title and status
+      operationId: updateTodo
+      parameters:
+      - name: todoId
+        in: path
+        description: The todo identifier
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/update_todo'
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "501":
+          description: Not Implemented
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "503":
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+      security:
+      - todo_auth:
+        - write:todo
+      x-swagger-router-controller: Tasks
+    delete:
+      tags:
+      - tasks
+      summary: Delete the todo
+      description: |
+        Delete the todo
+      operationId: deleteTodo
+      parameters:
+      - name: todoId
+        in: path
+        description: The todo identifier
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "204":
+          description: |
+            No content.
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "501":
+          description: Not Implemented
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "503":
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+      security:
+      - todo_auth:
+        - write:todo
+      x-swagger-router-controller: Tasks
+  /users:
+    get:
+      tags:
+      - users
+      summary: List the available users
+      description: |
+        The list of users.
+      operationId: listUsers
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/user'
+                x-content-type: application/json
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "501":
+          description: Not Implemented
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "503":
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+      x-swagger-router-controller: Users
+    post:
+      tags:
+      - users
+      summary: Create a user
+      description: creates a user
+      operationId: createUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/create_user'
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "501":
+          description: Not Implemented
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "503":
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+      x-swagger-router-controller: Users
+  /users/{userId}/todos:
+    get:
+      tags:
+      - users
+      summary: List the users todos
+      description: |
+        The list of users todos.
+      operationId: listUsersTodos
+      parameters:
+      - name: userId
+        in: path
+        description: The user identifier
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          format: int64
+      - name: status
+        in: query
+        description: Filters the tasks by their status
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          enum:
+          - done
+          - waiting
+          - all
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Todo'
+                x-content-type: application/json
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "501":
+          description: Not Implemented
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "503":
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+      x-swagger-router-controller: Users
+    post:
+      tags:
+      - users
+      summary: Create a todo
+      description: ""
+      operationId: createTodo
+      parameters:
+      - name: userId
+        in: path
+        description: The user identifier
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/create_todo'
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "501":
+          description: Not Implemented
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        "503":
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+      x-swagger-router-controller: Users
+components:
+  schemas:
+    user:
+      properties:
+        id:
+          type: integer
+          description: the user identifier
+          format: int64
+        name:
+          type: string
+          description: the users name
+      example:
+        id: 1
+        name: Lukas Tucker
+    create_user:
+      required:
+      - id
+      - name
+      type: object
+      example:
+        id: 1
+        name: Lukas Tucker
+    Todo:
+      required:
+      - create_date
+      - created_by
+      - description
+      - due_date
+      - id
+      - status
+      - title
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The todo identifier
+          format: int64
+        title:
+          type: string
+          description: The todo title
+        create_date:
+          type: string
+          description: The todo creation date
+          format: date-time
+        due_date:
+          type: string
+          description: The todo due date
+          format: date-time
+        status:
+          type: string
+          description: The todo state
+          enum:
+          - new
+          - working
+          - done
+        description:
+          type: string
+          description: The description of the todo
+        created_by:
+          type: string
+          description: The user who created the todo
+      example:
+        id: 23
+        title: Expleo task
+        description: Make the expleo task
+        status: working
+        create_date: 2021-12-24T00:00:00.000Z
+        due_date: 2022-12-24T00:00:00.000Z
+        created_by: Lukas Tucker
+      xml:
+        name: Todo
+    create_todo:
+      required:
+      - create_date
+      - description
+      - id
+      - status
+      - title
+      type: object
+      properties:
+        title:
+          type: string
+          description: The todo title
+    update_todo:
+      type: object
+      properties:
+        title:
+          type: string
+          description: The todo title
+        status:
+          type: string
+          description: The todo status
+          enum:
+          - new
+          - waiting
+          - done
+    errorResponse:
+      title: Object containing error response information
+      required:
+      - cause
+      - errorCode
+      type: object
+      properties:
+        errorCode:
+          type: string
+          description: Specific error codes returned in (optional) error structure
+        cause:
+          type: string
+          description: "Descriptive text about the error, optional"
+  securitySchemes:
+    todo_auth:
+      type: oauth2
+      flows:
+        password:
+          tokenUrl: http://localhost:8080/v1/oauth/token
+          scopes:
+            write:todo: Write a todo
+            read:todo: Read a todo

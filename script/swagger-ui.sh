@@ -1,0 +1,1 @@
+docker run -d -p 8001:8080 -e SWAGGER_JSON=/api/todo-api.oas.yaml -v $(pwd)/oas:/api swaggerapi/swagger-ui

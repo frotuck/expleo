@@ -1,0 +1,638 @@
+openapi: 3.0.1
+info:
+  contact:
+    email: tuckerlukas@gmail.com
+  description: Todo API
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Todo API
+  version: 1.0.0
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: http://localhost8080
+security:
+  - todo_auth: []
+tags:
+  - description: Tasks
+    name: tasks
+  - description: Users
+    name: users
+paths:
+  /:
+    get:
+      description: |
+        Default operation to redirect to the UI index page.
+      operationId: redirectTodos
+      responses:
+        '302':
+          description: redirect to the UI page
+      summary: Redirect to the UI
+      tags:
+        - tasks
+  /todos:
+    get:
+      description: |
+        The list of tasks can be filtered by their status.
+      operationId: listTodos
+      parameters:
+        - description: Filters the tasks by their status
+          explode: true
+          in: query
+          name: status
+          required: false
+          schema:
+            enum:
+              - done
+              - waiting
+              - all
+            type: string
+          style: form
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Todo'
+                type: array
+          description: successful operation
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '501':
+          description: Not Implemented
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '503':
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+      security:
+        - todo_auth:
+            - read:todo
+      summary: List the available tasks
+      tags:
+        - tasks
+  /todos/{todoId}:
+    delete:
+      description: |
+        Delete the todo
+      operationId: deleteTodo
+      parameters:
+        - description: The todo identifier
+          explode: false
+          in: path
+          name: todoId
+          required: true
+          schema:
+            format: int64
+            type: integer
+          style: simple
+      responses:
+        '204':
+          description: |
+            No content.
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '501':
+          description: Not Implemented
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '503':
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+      security:
+        - todo_auth:
+            - write:todo
+      summary: Delete the todo
+      tags:
+        - tasks
+    put:
+      description: |
+        Update the todo title and status
+      operationId: updateTodo
+      parameters:
+        - description: The todo identifier
+          explode: false
+          in: path
+          name: todoId
+          required: true
+          schema:
+            format: int64
+            type: integer
+          style: simple
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/update_todo'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+          description: successful operation
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '501':
+          description: Not Implemented
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '503':
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+      security:
+        - todo_auth:
+            - write:todo
+      summary: Update the todo
+      tags:
+        - tasks
+  /users:
+    get:
+      description: |
+        The list of users.
+      operationId: listUsers
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/user'
+                type: array
+          description: successful operation
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '501':
+          description: Not Implemented
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '503':
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+      summary: List the available users
+      tags:
+        - users
+    post:
+      description: 'creates a user'
+      operationId: createUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/create_user'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+          description: successful operation
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '501':
+          description: Not Implemented
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '503':
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+      summary: Create a user
+      tags:
+        - users
+  /users/{userId}/todos:
+    get:
+      description: |
+        The list of users todos.
+      operationId: listUsersTodos
+      parameters:
+        - description: The user identifier
+          explode: false
+          in: path
+          name: userId
+          required: true
+          schema:
+            format: int64
+            type: integer
+          style: simple
+        - description: Filters the tasks by their status
+          explode: true
+          in: query
+          name: status
+          required: false
+          schema:
+            enum:
+              - done
+              - waiting
+              - all
+            type: string
+          style: form
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Todo'
+                type: array
+          description: successful operation
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '501':
+          description: Not Implemented
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '503':
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+      summary: List the users todos
+      tags:
+        - users
+    post:
+      description: ''
+      operationId: createTodo
+      parameters:
+        - description: The user identifier
+          explode: false
+          in: path
+          name: userId
+          required: true
+          schema:
+            format: int64
+            type: integer
+          style: simple
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/create_todo'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+          description: successful operation
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '501':
+          description: Not Implemented
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '503':
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+      summary: Create a todo
+      tags:
+        - users
+components:
+  schemas:
+    user:
+      example:
+        id: 1
+        name: Lukas Tucker
+      properties:
+        id:
+          description: the user identifier
+          format: int64
+          type: integer
+        name:
+          description: the users name
+          type: string
+    create_user:
+      example:
+        id: 1
+        name: Lukas Tucker
+      required:
+        - id
+        - name
+      type: object
+    Todo:
+      example:
+        id: 23
+        title: Expleo task
+        description: Make the expleo task
+        status: working
+        create_date: '2021-12-24T00:00:00.000Z'
+        due_date: '2022-12-24T00:00:00.000Z'
+        created_by: 'Lukas Tucker'
+      properties:
+        id:
+          description: The todo identifier
+          format: int64
+          type: integer
+        title:
+          description: The todo title
+          type: string
+        create_date:
+          description: The todo creation date
+          format: date-time
+          type: string
+        due_date:
+          description: The todo due date
+          format: date-time
+          type: string
+        status:
+          description: The todo state
+          enum:
+            - new
+            - working
+            - done
+          type: string
+        description:
+          description: The description of the todo
+          type: string
+        created_by:
+          description: The user who created the todo
+          type: string
+      required:
+        - create_date
+        - description
+        - id
+        - status
+        - title
+        - due_date
+        - created_by
+      type: object
+      xml:
+        name: Todo
+    create_todo:
+      properties:
+        title:
+          description: The todo title
+          type: string
+      required:
+        - create_date
+        - description
+        - id
+        - status
+        - title
+      type: object
+    update_todo:
+      properties:
+        title:
+          description: The todo title
+          type: string
+        status:
+          description: The todo status
+          enum:
+            - new
+            - waiting
+            - done
+          type: string
+      type: object
+    errorResponse:
+      title: Object containing error response information
+      required:
+        - cause
+        - errorCode
+      type: object
+      properties:
+        errorCode:
+          type: string
+          description: Specific error codes returned in (optional) error structure
+        cause:
+          type: string
+          description: 'Descriptive text about the error, optional'
+  securitySchemes:
+    todo_auth:
+      flows:
+        password:
+          scopes:
+            write:todo: Write a todo
+            read:todo: Read a todo
+          tokenUrl: http://localhost:8080/v1/oauth/token
+      type: oauth2
