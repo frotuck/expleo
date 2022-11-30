@@ -1,7 +1,5 @@
-/* eslint-disable */
 const fs = require('fs');
 const path = require('path');
-// const tty = require('tty');
 const { Parser } = require('acorn');
 
 function generateRequireStatement(params) {
@@ -48,7 +46,6 @@ function generateModifiedCodeFile(params) {
   } = params;
   fs.renameSync(codeFilePath, path.join(codeFileDir, `${codeFileName}.js.original`));
 
-  // const writeStream = process.stdout;
   const writeStream = fs.createWriteStream(codeFilePath);
 
   writeStream.write("'use strict';");
@@ -64,7 +61,6 @@ function main() {
   const codeFileName = path.basename(codeFilePath, '.js');
   const codeFileDir = path.dirname(codeFilePath);
 
-  // eslint-disable-next-line camelcase
   const controller_code_file = fs.readFileSync(codeFilePath, 'utf8');
 
   const tree = Parser.parse(controller_code_file, {
