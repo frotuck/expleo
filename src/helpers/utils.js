@@ -18,6 +18,13 @@ async function* walk(dir) {
 	}
 }
 
+function tmpFile(prefix, suffix, tmpdir) {
+    prefix = (typeof prefix !== 'undefined') ? prefix : 'tmp.';
+    suffix = (typeof suffix !== 'undefined') ? suffix : '';
+    tmpdir = tmpdir ? tmpdir : os.tmpdir();
+    return path.join(tmpdir, prefix + crypto.randomBytes(16).toString('hex') + suffix);
+}
+
 function isHex(h) {
 	const re = /[0-9A-Fa-f]{6}/g;
 	return re.test(h);
@@ -37,19 +44,40 @@ async function getDatabaseConnectionParameters() {
 		'mongodb://',
 		getEnvVar('DB_SERVER', 'localhost'),
 		':27017/',
-		getEnvVar('DB_DATABASE', 'apigarden-catalog')
+		getEnvVar('DB_DATABASE', 'expleo-todo'),
 	);
 	const options = {
-		user: getEnvVar('DB_USER', 'apigarden'),
+		user: getEnvVar('DB_USER', 'expleo'),
 		pass: getEnvVar('DB_PASSWORD', 'todos'),
 		// useNewUrlParser: true,
 		useUnifiedTopology: true,
 	};
+
+    let CAfileName;
+    const CAfileKey = getEnvVar('S3_DOCDB_CAFILE_KEY');
+    if( CAfileKey ) {
+	const certFileBuf = await getDatabaseCACerts();
+	CAfileName = tmpFile();
+	console.log(CAfileName);
+	await fs.promises.writeFile(CAfileName, certFileBuf)
+    }
+    else {
+        const dbCAfile = getEnvVar('DB_CAFILE');
+        if( dbCAfile ) {
+	    CAfileName = dbCAfile;
+        }
+    }
+
+    if( CAfileName ) {
+	url += '?tls=true&replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=false';
+	options.sslCA = CAfileName;
+    }
+
 	const connParams = {
 		url,
 		options,
 	};
-	// console.log(connParams);
+	console.log(connParams);
 	return connParams;
 }
 

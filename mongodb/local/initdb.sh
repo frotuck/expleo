@@ -1,1 +1,1 @@
-mongosh -u root -p expleo --authenticationDatabase admin admin < initdb.js
+mongosh -u root -p todo --authenticationDatabase admin admin < initdb.js

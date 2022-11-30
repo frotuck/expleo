@@ -1,4 +1,4 @@
-//@ts-nocheck
+db.getSiblingDB("expleo-todo")
 use admin;
 db.createUser(
   {

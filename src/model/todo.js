@@ -15,5 +15,4 @@ const userSchema = new Schema({
 });
 
 
-module.exports = mongoose.model('Todo', TodoSchema);
-module.exports = mongoose.model('User', userSchema);
+module.exports ={Todo: mongoose.model('Todo', TodoSchema), User: mongoose.model('User', userSchema)};

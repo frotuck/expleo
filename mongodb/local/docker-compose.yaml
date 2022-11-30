@@ -44,7 +44,7 @@ services:
     volumes:
       - mongodb-data:/data/db
     depends_on:
-      - mongodb
+      - mongo
     networks:
       - mongodb_network
     ports:
