@@ -7,6 +7,7 @@ const oas3Tools = require('oas3-tools');
 const fs = require('fs');
 const YAML = require('yaml');
 const URL = require('url')
+const {errorHandlerMiddleware} = require("./utils/error");
 
 const { globalMap , SERVER_PORT , SERVER_PATH , TODO_API_OAS_PATH , TODO_API_PORT, TEST_MODE,isTestMode,
     TODO_SERVER
@@ -63,16 +64,19 @@ const openApiApp = expressAppConfig.getApp();
 
 const app = express();
 
+// Add headers
+app.use(/.*/, cors());
+
 
 for (let i = 2; i < openApiApp._router.stack.length; i++) {
     const {name} = openApiApp._router.stack[i];
     console.log("name:",name)
-    if (name === 'multipartMiddleware' || name === 'errorHandler') continue; //Upload of files is not working as expected if this middleware is registered also errorHandler.
     app._router.stack.push(openApiApp._router.stack[i])
 }
 
+app.use(errorHandlerMiddleware);
+
 http.createServer(app).listen(serverPort, function () {
-    console.log(process.env.TODO_API_OAS_PATH)
     console.log('Your server is listening on port %d (http://localhost:%d)', serverPort , serverPort);
     console.log('Swagger-ui is available on http://localhost:%d/docs', serverPort);
 });
