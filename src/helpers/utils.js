@@ -98,4 +98,38 @@ module.exports = {
 		}
 		return todoRecord.toObject();
     },
+
+    getCompleteURL: function(req, ...parts) {
+		let url;
+		if (globalMap.get(CATALOG_SERVER)) {
+			url = globalMap.get(CATALOG_SERVER);
+		} else {
+			const port = globalMap.get(SERVER_PORT);
+			const serverPath = globalMap.get(SERVER_PATH);
+			url = req.protocol + '://' +
+				req.hostname +
+				( port == 80 || port == 443 ? '' : ':'+port ) +
+				((serverPath == '/') ? '' : serverPath);
+		}
+
+
+		parts.forEach( part => {
+			url += '/' + part;
+		})
+
+		return url;
+    },
+
+    md5: function(data) {
+        const hash = crypto.createHash("md5").update(data).digest("hex").substr(0,24);
+        return hash;
+        },
+    
+        or(p1, p2) {
+            return (x) =>  p1(x) || p2(x);
+        },
+        and(p1, p2) {
+            return (x) =>  p1(x) && p2(x);
+        },
+        walk: walk
 };
