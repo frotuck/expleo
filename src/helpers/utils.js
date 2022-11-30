@@ -1,0 +1,101 @@
+const fs = require('fs');
+const crypto = require('crypto');
+const path = require('path');
+const os = require('os');
+const mongoose = require('mongoose');
+const {
+	globalMap,
+	SERVER_PORT,
+	SERVER_PATH,
+	TODO_SERVER,
+} = require('../utils/globalmap');
+
+async function* walk(dir) {
+	for await (const d of await fs.promises.opendir(dir)) {
+		const entry = path.join(dir, d.name);
+		if (d.isDirectory()) yield* walk(entry);
+		else if (d.isFile()) yield entry;
+	}
+}
+
+function isHex(h) {
+	const re = /[0-9A-Fa-f]{6}/g;
+	return re.test(h);
+}
+
+function getEnvVar(envVarName, defaultValue) {
+	const _envVarName = 'TODO_API_' + envVarName;
+	const value = process.env[_envVarName]
+		? process.env[_envVarName]
+		: defaultValue;
+	// console.log(_envVarName, value);
+	return value;
+}
+
+async function getDatabaseConnectionParameters() {
+	let url = ''.concat(
+		'mongodb://',
+		getEnvVar('DB_SERVER', 'localhost'),
+		':27017/',
+		getEnvVar('DB_DATABASE', 'apigarden-catalog')
+	);
+	const options = {
+		user: getEnvVar('DB_USER', 'apigarden'),
+		pass: getEnvVar('DB_PASSWORD', 'todos'),
+		// useNewUrlParser: true,
+		useUnifiedTopology: true,
+	};
+	const connParams = {
+		url,
+		options,
+	};
+	// console.log(connParams);
+	return connParams;
+}
+
+module.exports = {
+	connectToDatabase: async function () {
+		const { url, options } = await getDatabaseConnectionParameters();
+		const db = await mongoose.connect(url, options);
+		console.log('Database connected:', url);
+		if (options.sslCA) {
+			await fs.promises.unlink(options.sslCA);
+		}
+		return db;
+	},
+
+	selectPaths: function (obj, paths) {
+		const result = {};
+		for (const p of paths) {
+			result[p] = obj[p];
+		}
+		return result;
+	},
+    
+    getTodo: async function (options) {
+		// console.log('gettodo(', options, ')');
+		try {
+			const { model, key, keyname, populate } = options;
+
+			const todo = isHex(key)
+				? await model.findById(key).populate(populate)
+				: await model.findOne({ [keyname]: key }).populate(populate);
+
+			return todo ? todo.toObject() : null;
+		} catch (e) {
+			throw e;
+		}
+	},
+
+    saveTodo: async function (model, todo , user_email) {
+		let todoRecord = await model.findById(todo._id);
+		if( todoRecord ) {
+			todoRecord.overwrite({...todo , lastModifiedBy: user_email , lastModifiedAt: Date.now() });
+			await todoRecord.save();
+		}
+		else {
+			todoRecord = await model.create({...todo , createdBy: user_email , createdAt: Date.now()} );
+		}
+		return todoRecord.toObject();
+    },
+};
