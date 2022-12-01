@@ -18,7 +18,7 @@ Get the code:
 
 The service stores its information in a MongoDB database. Locally, the database runs in Docker from a docker-compose manifest.
 
-    $ cd mongodb
+    $ cd mongodb/local
     $ docker network create mongodb_network  #you only do this once
     $ docker-compose up -d
 
