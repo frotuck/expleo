@@ -18,11 +18,6 @@ async function* walk(dir) {
 	}
 }
 
-function isHex(h) {
-	const re = /[0-9A-Fa-f]{6}/g;
-	return re.test(h);
-}
-
 function getEnvVar(envVarName, defaultValue) {
 	const _envVarName = 'TODO_API_' + envVarName;
 	const value = process.env[_envVarName]
@@ -37,19 +32,19 @@ async function getDatabaseConnectionParameters() {
 		'mongodb://',
 		getEnvVar('DB_SERVER', 'localhost'),
 		':27017/',
-		getEnvVar('DB_DATABASE', 'apigarden-catalog')
+		getEnvVar('DB_DATABASE', 'admin'),
 	);
 	const options = {
-		user: getEnvVar('DB_USER', 'apigarden'),
-		pass: getEnvVar('DB_PASSWORD', 'todos'),
-		// useNewUrlParser: true,
+		user: getEnvVar('DB_USER', 'admin'),
+		pass: getEnvVar('DB_PASSWORD', 'admin123'),
 		useUnifiedTopology: true,
 	};
+
 	const connParams = {
 		url,
 		options,
 	};
-	// console.log(connParams);
+	console.log("connParams", connParams);
 	return connParams;
 }
 
@@ -57,10 +52,7 @@ module.exports = {
 	connectToDatabase: async function () {
 		const { url, options } = await getDatabaseConnectionParameters();
 		const db = await mongoose.connect(url, options);
-		console.log('Database connected:', url);
-		if (options.sslCA) {
-			await fs.promises.unlink(options.sslCA);
-		}
+		console.log('Database connected:', url)
 		return db;
 	},
 
@@ -71,38 +63,11 @@ module.exports = {
 		}
 		return result;
 	},
-    
-    getTodo: async function (options) {
-		// console.log('gettodo(', options, ')');
-		try {
-			const { model, key, keyname, populate } = options;
-
-			const todo = isHex(key)
-				? await model.findById(key).populate(populate)
-				: await model.findOne({ [keyname]: key }).populate(populate);
-
-			return todo ? todo.toObject() : null;
-		} catch (e) {
-			throw e;
-		}
-	},
-
-    saveTodo: async function (model, todo , user_email) {
-		let todoRecord = await model.findById(todo._id);
-		if( todoRecord ) {
-			todoRecord.overwrite({...todo , lastModifiedBy: user_email , lastModifiedAt: Date.now() });
-			await todoRecord.save();
-		}
-		else {
-			todoRecord = await model.create({...todo , createdBy: user_email , createdAt: Date.now()} );
-		}
-		return todoRecord.toObject();
-    },
 
     getCompleteURL: function(req, ...parts) {
 		let url;
-		if (globalMap.get(CATALOG_SERVER)) {
-			url = globalMap.get(CATALOG_SERVER);
+		if (globalMap.get(TODO_SERVER)) {
+			url = globalMap.get(TODO_SERVER);
 		} else {
 			const port = globalMap.get(SERVER_PORT);
 			const serverPath = globalMap.get(SERVER_PATH);

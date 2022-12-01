@@ -47,9 +47,8 @@ paths:
             enum:
               - done
               - waiting
-              - all
+              - new
             type: string
-          style: form
       responses:
         '200':
           content:
@@ -108,6 +107,75 @@ paths:
       tags:
         - tasks
   /todos/{todoId}:
+    get:
+      description: |
+        Get the specific task.
+      operationId: todo
+      parameters:
+        - description: The todo identifier
+          explode: false
+          in: path
+          name: todoId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Todo'
+                type: object
+          description: successful operation
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '501':
+          description: Not Implemented
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        '503':
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+      security:
+        - todo_auth:
+            - read:todo
+      summary: List the available tasks
+      tags:
+        - tasks
     delete:
       description: |
         Delete the todo
@@ -117,11 +185,9 @@ paths:
           explode: false
           in: path
           name: todoId
-          required: true
           schema:
-            format: int64
-            type: integer
-          style: simple
+            type: string
+          required: true
       responses:
         '204':
           description: |
@@ -183,14 +249,12 @@ paths:
           explode: false
           in: path
           name: todoId
-          required: true
           schema:
-            format: int64
-            type: integer
-          style: simple
+            type: string
+          required: true
       requestBody:
         content:
-          application/x-www-form-urlencoded:
+          application/json:
             schema:
               $ref: '#/components/schemas/update_todo'
       responses:
@@ -253,6 +317,17 @@ paths:
       description: |
         The list of users.
       operationId: listUsers
+      parameters:
+        - description: Filters the tasks by their status
+          explode: true
+          in: query
+          name: tasks
+          required: false
+          schema:
+            enum:
+              - open
+              - done
+            type: string
       responses:
         '200':
           content:
@@ -379,9 +454,7 @@ paths:
           name: userId
           required: true
           schema:
-            format: int64
-            type: integer
-          style: simple
+            type: string
         - description: Filters the tasks by their status
           explode: true
           in: query
@@ -391,9 +464,8 @@ paths:
             enum:
               - done
               - waiting
-              - all
+              - new
             type: string
-          style: form
       responses:
         '200':
           content:
@@ -456,14 +528,12 @@ paths:
           explode: false
           in: path
           name: userId
-          required: true
           schema:
-            format: int64
-            type: integer
-          style: simple
+            type: string
+          required: true
       requestBody:
         content:
-          application/x-www-form-urlencoded:
+          application/json:
             schema:
               $ref: '#/components/schemas/create_todo'
       responses:
@@ -524,6 +594,7 @@ components:
       example:
         id: 1
         name: Lukas Tucker
+        todos: []
       properties:
         id:
           description: the user identifier
@@ -537,7 +608,6 @@ components:
         id: 1
         name: Lukas Tucker
       required:
-        - id
         - name
       type: object
     Todo:
@@ -595,10 +665,8 @@ components:
           description: The todo title
           type: string
       required:
-        - create_date
+        - due_date
         - description
-        - id
-        - status
         - title
       type: object
     update_todo:

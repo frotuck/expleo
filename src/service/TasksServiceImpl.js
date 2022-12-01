@@ -1,4 +1,8 @@
 'use strict';
+const mongoose = require('mongoose');
+const { Todo, User } = require('../model/todo');
+const {ServiceError} = require('../utils/error');
+
 /**
  * Delete the todo
  * Delete the todo 
@@ -7,7 +11,16 @@
  * no response value expected for this operation
  **/
 exports.deleteTodo_impl = async function(todoId,req,res) {
-    return { message: 'deleteTodo - not yet implemented' };
+    try {
+        const todo = await Todo.findById(todoId);
+        if (!todo) {
+            return res.status(404).send({ message: 'Todo not found' });
+        }
+        await todo.remove();
+        return res.status(204).send();
+    } catch (error) {
+        return new ServiceError(400,error.message);
+    }
 }
 
 /**
@@ -18,7 +31,34 @@ exports.deleteTodo_impl = async function(todoId,req,res) {
  * returns List
  **/
 exports.listTodos_impl = async function(status,req,res) {
-    return { message: 'listTodos - not yet implemented' };
+   try {
+         //remove __v
+         const todos = await Todo.find({}).select('-__v');
+         return { todos };
+   } catch (error) {
+            throw new ServiceError(400,error.message);
+   }
+}
+
+/**
+ * List the available tasks
+ * Get the specific task. 
+ *
+ * todoId String The todo identifier
+ * returns List
+ **/
+ exports.todo_impl = async function(todoId,req,res) {
+    try {
+        const todo = await Todo.findById(todoId).select('-__v');
+        if (!todo) {
+            return new ServiceError(404,'Todo not found');
+        }
+        todo.createdBy = await User.findById(todo.createdBy).select('-__v, -todos');
+
+        return { todo };
+    } catch (error) {
+        return new ServiceError(400,error.message);
+    }
 }
 
 /**
@@ -38,6 +78,29 @@ exports.redirectTodos_impl = async function(req,res) {
  * todoId Long The todo identifier
  * returns Todo
  **/
-exports.updateTodo_impl = async function(todoId,req,res) {
-    return { message: 'updateTodo - not yet implemented' };
+exports.updateTodo_impl = async function(body,todoId,req,res) {
+    try {
+        const todo = await Todo.findById(todoId);
+        if (!todo) {
+            return new ServiceError(404,'Todo not found');
+        }
+        const { title, description, status, due_date } = body;
+        //only change the updated fields
+        if (title) {
+            todo.title = title;
+        }
+        if (description) {
+            todo.description = description;
+        }
+        if (status) {
+            todo.status = status;
+        }
+        if (due_date) {
+            todo.due_date = due_date;
+        }
+        await todo.save();
+        return { todo };
+    } catch (error) {
+        return new ServiceError(400,error.message);
+    }
 }

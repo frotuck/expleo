@@ -1,0 +1,119 @@
+'use strict';
+
+
+/**
+ * Create a todo
+ *
+ * body Create_todo  (optional)
+ * userId String The user identifier
+ * returns Todo
+ **/
+exports.createTodo = function(body,userId) {
+  return new Promise(function(resolve, reject) {
+    var examples = {};
+    examples['application/json'] = {
+  "id" : 23,
+  "title" : "Expleo task",
+  "description" : "Make the expleo task",
+  "status" : "working",
+  "create_date" : "2021-12-24T00:00:00.000Z",
+  "due_date" : "2022-12-24T00:00:00.000Z",
+  "created_by" : "Lukas Tucker"
+};
+    if (Object.keys(examples).length > 0) {
+      resolve(examples[Object.keys(examples)[0]]);
+    } else {
+      resolve();
+    }
+  });
+}
+
+
+/**
+ * Create a user
+ * creates a user
+ *
+ * body Create_user  (optional)
+ * returns user
+ **/
+exports.createUser = function(body) {
+  return new Promise(function(resolve, reject) {
+    var examples = {};
+    examples['application/json'] = {
+  "id" : 1,
+  "name" : "Lukas Tucker",
+  "todos" : [ ]
+};
+    if (Object.keys(examples).length > 0) {
+      resolve(examples[Object.keys(examples)[0]]);
+    } else {
+      resolve();
+    }
+  });
+}
+
+
+/**
+ * List the available users
+ * The list of users. 
+ *
+ * tasks String Filters the tasks by their status (optional)
+ * returns List
+ **/
+exports.listUsers = function(tasks) {
+  return new Promise(function(resolve, reject) {
+    var examples = {};
+    examples['application/json'] = [ {
+  "id" : 1,
+  "name" : "Lukas Tucker",
+  "todos" : [ ]
+}, {
+  "id" : 1,
+  "name" : "Lukas Tucker",
+  "todos" : [ ]
+} ];
+    if (Object.keys(examples).length > 0) {
+      resolve(examples[Object.keys(examples)[0]]);
+    } else {
+      resolve();
+    }
+  });
+}
+
+
+/**
+ * List the users todos
+ * The list of users todos. 
+ *
+ * userId String The user identifier
+ * status String Filters the tasks by their status (optional)
+ * returns List
+ **/
+exports.listUsersTodos = function(userId,status) {
+  return new Promise(function(resolve, reject) {
+    var examples = {};
+    examples['application/json'] = [ {
+  "id" : 23,
+  "title" : "Expleo task",
+  "description" : "Make the expleo task",
+  "status" : "working",
+  "create_date" : "2021-12-24T00:00:00.000Z",
+  "due_date" : "2022-12-24T00:00:00.000Z",
+  "created_by" : "Lukas Tucker"
+}, {
+  "id" : 23,
+  "title" : "Expleo task",
+  "description" : "Make the expleo task",
+  "status" : "working",
+  "create_date" : "2021-12-24T00:00:00.000Z",
+  "due_date" : "2022-12-24T00:00:00.000Z",
+  "created_by" : "Lukas Tucker"
+} ];
+    if (Object.keys(examples).length > 0) {
+      resolve(examples[Object.keys(examples)[0]]);
+    } else {
+      resolve();
+    }
+  });
+}
+

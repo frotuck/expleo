@@ -3,19 +3,17 @@ version: '3.8'
 
 networks:
   mongodb_network:
-    external: true
 
 volumes:
   mongodb-data:
-    external: true
-    
-services:
 
+services:
   mongo:
     image: mongo
     container_name: mongodb
     restart: unless-stopped
     volumes:
+      - ./docker-entrypoint-initdb.d/initdb.js:/docker-entrypoint-initdb.d/initdb.js:ro
       - mongodb-data:/data/db
     ports:
       - 27017:27017
@@ -27,7 +25,7 @@ services:
 
   mongo-express:
     image: mongo-express
-    container_name: mongo-express    
+    container_name: mongo-express
     ports:
       - 8081:8081
     environment:
@@ -44,7 +42,7 @@ services:
     volumes:
       - mongodb-data:/data/db
     depends_on:
-      - mongodb
+      - mongo
     networks:
       - mongodb_network
     ports:
