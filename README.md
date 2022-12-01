@@ -42,7 +42,7 @@ Enter [http://localhost:8081 ](http://localhost:8081)into your browser. When ask
 
 Now you're all set to run the Todo API backend locally. In your shell, just do:
 
-    $ cd .. # should lead to the root of expleo directory hierarchy
+    $ cd ../.. # should lead to the root of expleo directory hierarchy
     $ npm start
 
 which will do `npm install` and then launch **nodemon** which will make sure the service backend is running continuosly, restarting it on source code file changes.
