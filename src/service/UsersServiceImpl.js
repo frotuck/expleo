@@ -30,6 +30,9 @@ exports.createTodo_impl = async function (body, userId, req, res) {
 		if (!user) {
 			throw new ServiceError(404, 'User not found');
 		}
+        if(body.status !== 'new' && body.status !== 'waiting' && body.status !== 'done'){
+            throw new ServiceError(400, 'Invalid status');
+        }
 		const todos = await Todo.create({
 			_id: taskID,
 			title: body.title,
@@ -41,7 +44,7 @@ exports.createTodo_impl = async function (body, userId, req, res) {
 			href: getCompleteURL(req, 'todos', taskID),
 		});
 		console.log('todos:', todos);
-		return { todos };
+		return  todos ;
 	} catch (error) {
 		throw new ServiceError(400, error.message);
 	}
@@ -64,7 +67,7 @@ exports.createUser_impl = async function (body, req, res) {
 		});
 		return { user };
 	} catch (error) {
-		throw new ServiceError(error.message);
+		throw new ServiceError(400,error.message);
 	}
 };
 
@@ -78,7 +81,6 @@ exports.listUsers_impl = async function (tasks, req, res) {
 	try {
 		//remove __v and _id
 		const users = await User.find({}).select('-__v');
-		//find todos that match the userId in the request
 		const todos = await Todo.find({});
 		//add todos to users
 		users.forEach(user => {
@@ -86,7 +88,6 @@ exports.listUsers_impl = async function (tasks, req, res) {
 				todo => todo.createdBy.toString() === user._id.toString()
 			);
 		});
-		console.log(tasks);
 		if (tasks) {
 			//remove users that don't have any todos in the list and return users with todos that have status "new" or "waiting"
 			if (tasks === 'open') {
@@ -145,7 +146,7 @@ exports.listUsersTodos_impl = async function (status, userId, req, res) {
 		//if status is provided, filter the todos by status
 		if (status) {
 			const filteredTodos = todos.filter(todo => todo.status === status);
-			return { todos: filteredTodos };
+			return filteredTodos;
 		}
 		return todos;
 	} catch (error) {

@@ -34,7 +34,12 @@ exports.listTodos_impl = async function(status,req,res) {
    try {
          //remove __v
          const todos = await Todo.find({}).select('-__v');
-         return { todos };
+         //filter todos by status
+            if (status) {
+                const filteredTodos = todos.filter(todo => todo.status === status);
+                return filteredTodos;
+            }
+         return todos;
    } catch (error) {
             throw new ServiceError(400,error.message);
    }
@@ -55,7 +60,7 @@ exports.listTodos_impl = async function(status,req,res) {
         }
         todo.createdBy = await User.findById(todo.createdBy).select('-__v, -todos');
 
-        return { todo };
+        return  todo ;
     } catch (error) {
         return new ServiceError(400,error.message);
     }
@@ -99,7 +104,7 @@ exports.updateTodo_impl = async function(body,todoId,req,res) {
             todo.due_date = due_date;
         }
         await todo.save();
-        return { todo };
+        return  todo ;
     } catch (error) {
         return new ServiceError(400,error.message);
     }

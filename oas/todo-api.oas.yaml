@@ -12,9 +12,7 @@ externalDocs:
   description: Find out more about Swagger
   url: http://swagger.io
 servers:
-  - url: http://localhost8080
-security:
-  - todo_auth: []
+  - url: http://localhost:8080
 tags:
   - description: Tasks
     name: tasks
@@ -100,9 +98,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/errorResponse'
-      security:
-        - todo_auth:
-            - read:todo
       summary: List the available tasks
       tags:
         - tasks
@@ -170,9 +165,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/errorResponse'
-      security:
-        - todo_auth:
-            - read:todo
       summary: List the available tasks
       tags:
         - tasks
@@ -234,9 +226,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/errorResponse'
-      security:
-        - todo_auth:
-            - write:todo
       summary: Delete the todo
       tags:
         - tasks
@@ -306,9 +295,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/errorResponse'
-      security:
-        - todo_auth:
-            - write:todo
       summary: Update the todo
       tags:
         - tasks
@@ -615,7 +601,7 @@ components:
         id: 23
         title: Expleo task
         description: Make the expleo task
-        status: working
+        status: waiting
         create_date: '2021-12-24T00:00:00.000Z'
         due_date: '2022-12-24T00:00:00.000Z'
         created_by: 'Lukas Tucker'
@@ -695,12 +681,3 @@ components:
         cause:
           type: string
           description: 'Descriptive text about the error, optional'
-  securitySchemes:
-    todo_auth:
-      flows:
-        password:
-          scopes:
-            write:todo: Write a todo
-            read:todo: Read a todo
-          tokenUrl: http://localhost:8080/v1/oauth/token
-      type: oauth2
