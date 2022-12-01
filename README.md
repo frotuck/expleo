@@ -87,6 +87,7 @@ To generate a new set of code files, you run a script that calls on the the code
 
 This will generate code into the ./workspace directory and then copy some of the generated artifacts (controllers and services) to the ./src directory.
 
+
 Also generated, but not copied to ./src/services, are stubs for the implementation of the service endpoints. These are named as the service code files, with an additional "Impl" added to th end of the code filename. For instance, for the ./service/todoService.js (corresponding to the APIs section in the OAS) there is the corresponding service implementation code file, called ./service/TodosServiceImpl.js
 
 When a new section in the OAS is established, you can manually copy the corresponding implementation code file to ./src/service directory. This will get you a basic implementation of the endpoints in the new section, each endpoint saying "not implemented" back to the caller.
