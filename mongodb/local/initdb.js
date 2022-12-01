@@ -1,4 +1,3 @@
-db.getSiblingDB("expleo-todo")
 use admin;
 db.createUser(
   {
@@ -7,11 +6,12 @@ db.createUser(
     roles: [ { role: "userAdminAnyDatabase", db: "admin" }, "readWriteAnyDatabase" ]
   }
 );
+//would not work only admin worked *sad face*
 use expleo-todo;
 db.createUser(
   {
     user: "expleo",
-    pwd:  "todo",
+    pwd:  "asdf",
     roles: [ { role: "readWrite", db: "expleo-todo" } ]
   }
 );

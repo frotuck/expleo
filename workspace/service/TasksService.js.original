@@ -1,0 +1,130 @@
+'use strict';
+
+
+/**
+ * Delete the todo
+ * Delete the todo 
+ *
+ * todoId String The todo identifier
+ * no response value expected for this operation
+ **/
+exports.deleteTodo = function(todoId) {
+  return new Promise(function(resolve, reject) {
+    resolve();
+  });
+}
+
+
+/**
+ * List the available tasks
+ * The list of tasks can be filtered by their status. 
+ *
+ * status String Filters the tasks by their status (optional)
+ * returns List
+ **/
+exports.listTodos = function(status) {
+  return new Promise(function(resolve, reject) {
+    var examples = {};
+    examples['application/json'] = [ {
+  "id" : 23,
+  "title" : "Expleo task",
+  "description" : "Make the expleo task",
+  "status" : "working",
+  "create_date" : "2021-12-24T00:00:00.000Z",
+  "due_date" : "2022-12-24T00:00:00.000Z",
+  "created_by" : "Lukas Tucker"
+}, {
+  "id" : 23,
+  "title" : "Expleo task",
+  "description" : "Make the expleo task",
+  "status" : "working",
+  "create_date" : "2021-12-24T00:00:00.000Z",
+  "due_date" : "2022-12-24T00:00:00.000Z",
+  "created_by" : "Lukas Tucker"
+} ];
+    if (Object.keys(examples).length > 0) {
+      resolve(examples[Object.keys(examples)[0]]);
+    } else {
+      resolve();
+    }
+  });
+}
+
+
+/**
+ * Redirect to the UI
+ * Default operation to redirect to the UI index page. 
+ *
+ * no response value expected for this operation
+ **/
+exports.redirectTodos = function() {
+  return new Promise(function(resolve, reject) {
+    resolve();
+  });
+}
+
+
+/**
+ * List the available tasks
+ * Get the specific task. 
+ *
+ * todoId String The todo identifier
+ * returns List
+ **/
+exports.todo = function(todoId) {
+  return new Promise(function(resolve, reject) {
+    var examples = {};
+    examples['application/json'] = [ {
+  "id" : 23,
+  "title" : "Expleo task",
+  "description" : "Make the expleo task",
+  "status" : "working",
+  "create_date" : "2021-12-24T00:00:00.000Z",
+  "due_date" : "2022-12-24T00:00:00.000Z",
+  "created_by" : "Lukas Tucker"
+}, {
+  "id" : 23,
+  "title" : "Expleo task",
+  "description" : "Make the expleo task",
+  "status" : "working",
+  "create_date" : "2021-12-24T00:00:00.000Z",
+  "due_date" : "2022-12-24T00:00:00.000Z",
+  "created_by" : "Lukas Tucker"
+} ];
+    if (Object.keys(examples).length > 0) {
+      resolve(examples[Object.keys(examples)[0]]);
+    } else {
+      resolve();
+    }
+  });
+}
+
+
+/**
+ * Update the todo
+ * Update the todo title and status 
+ *
+ * body Update_todo  (optional)
+ * todoId String The todo identifier
+ * returns Todo
+ **/
+exports.updateTodo = function(body,todoId) {
+  return new Promise(function(resolve, reject) {
+    var examples = {};
+    examples['application/json'] = {
+  "id" : 23,
+  "title" : "Expleo task",
+  "description" : "Make the expleo task",
+  "status" : "working",
+  "create_date" : "2021-12-24T00:00:00.000Z",
+  "due_date" : "2022-12-24T00:00:00.000Z",
+  "created_by" : "Lukas Tucker"
+};
+    if (Object.keys(examples).length > 0) {
+      resolve(examples[Object.keys(examples)[0]]);
+    } else {
+      resolve();
+    }
+  });
+}
+
