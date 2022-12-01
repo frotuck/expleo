@@ -1,1 +1,0 @@
-mongosh -u root -p todo --authenticationDatabase admin admin < initdb.js

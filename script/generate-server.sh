@@ -36,5 +36,5 @@ cp api/openapi.yaml $srcdir/api
 cp $controllers_dir/*.js $srcdir/$controllers_dir
 cp $services_dir/*[!Impl].js $srcdir/$services_dir
 
-#rm -rf $workspace_dir
+rm -rf $workspace_dir
 cd $repodir
