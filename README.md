@@ -1,3 +1,7 @@
+## Diagram
+
+![diagram](./docs/Todo%20API%20Diagram.png)
+
 ## Getting started
 
 Get the code:
@@ -86,7 +90,6 @@ To generate a new set of code files, you run a script that calls on the the code
     $ script/generate-server.sh
 
 This will generate code into the ./workspace directory and then copy some of the generated artifacts (controllers and services) to the ./src directory.
-
 
 Also generated, but not copied to ./src/services, are stubs for the implementation of the service endpoints. These are named as the service code files, with an additional "Impl" added to th end of the code filename. For instance, for the ./service/TasksService.js (corresponding to the APIs section in the OAS) there is the corresponding service implementation code file, called ./service/TasksServiceImpl.js
 
